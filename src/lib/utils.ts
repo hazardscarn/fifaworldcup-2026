@@ -1,11 +1,11 @@
-/** Fibonacci stage multipliers: Group=1, R32=2, R16=3, QF=5, SF=8, Final=13 */
+/** Stage multipliers: Group=1, R32=2, R16=3, QF=5, 3rd=6, SF=8, Final=13 */
 export function getStageWeight(stage: string | null | undefined): number {
   if (!stage) return 1
   const s = stage.toLowerCase()
   if (s === 'final') return 13
   if (s.includes('semi')) return 8
+  if (s.includes('third') || s.includes('3rd')) return 6
   if (s.includes('quarter')) return 5
-  if (s === 'third place') return 5
   if (s.includes('16')) return 3
   if (s.includes('32')) return 2
   return 1

@@ -101,9 +101,10 @@ export default function Header() {
 
           <button
             onClick={handleSignOut}
-            className="hidden sm:flex btn-ghost text-slate-400 hover:text-red-500"
+            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-semibold text-slate-500 hover:text-red-600 hover:bg-red-50 border border-slate-200 hover:border-red-200 transition-all duration-200"
           >
-            <LogOut size={16} />
+            <LogOut size={14} />
+            Logout
           </button>
 
           <button
@@ -155,7 +156,7 @@ export default function Header() {
             </Link>
             <button onClick={handleSignOut}
               className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-sm text-red-500 text-left">
-              <LogOut size={16} /> Sign out
+              <LogOut size={16} /> Logout
             </button>
           </div>
         </div>

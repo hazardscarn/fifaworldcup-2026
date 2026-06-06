@@ -7,17 +7,19 @@ const STAGES = [
   { label: 'Round of 32',  weight: 2 },
   { label: 'Round of 16',  weight: 3 },
   { label: 'Quarter-Final', weight: 5 },
+  { label: 'Third Place',   weight: 6 },
   { label: 'Semi-Final',    weight: 8 },
   { label: 'Final',         weight: 13 },
 ]
 
 const WEIGHT_COLORS: Record<number, { color: string; bg: string; border: string }> = {
-  1:  { color: '#64748B', bg: '#F1F5F9',              border: '#E2E8F0' },
+  1:  { color: '#64748B', bg: '#F1F5F9',               border: '#E2E8F0' },
   2:  { color: '#1D4ED8', bg: 'rgba(59,130,246,0.08)', border: 'rgba(59,130,246,0.2)' },
-  3:  { color: '#1D4ED8', bg: 'rgba(59,130,246,0.1)', border: 'rgba(59,130,246,0.25)' },
-  5:  { color: '#DC2626', bg: 'rgba(239,68,68,0.08)', border: 'rgba(239,68,68,0.2)' },
-  8:  { color: '#7C3AED', bg: 'rgba(168,85,247,0.1)', border: 'rgba(168,85,247,0.25)' },
-  13: { color: '#B45309', bg: 'rgba(234,179,8,0.1)',  border: 'rgba(234,179,8,0.3)' },
+  3:  { color: '#1D4ED8', bg: 'rgba(59,130,246,0.1)',  border: 'rgba(59,130,246,0.25)' },
+  5:  { color: '#DC2626', bg: 'rgba(239,68,68,0.08)',  border: 'rgba(239,68,68,0.2)' },
+  6:  { color: '#EA580C', bg: 'rgba(234,88,12,0.08)',  border: 'rgba(234,88,12,0.2)' },
+  8:  { color: '#7C3AED', bg: 'rgba(168,85,247,0.1)',  border: 'rgba(168,85,247,0.25)' },
+  13: { color: '#B45309', bg: 'rgba(234,179,8,0.1)',   border: 'rgba(234,179,8,0.3)' },
 }
 
 type OutcomeResult = 'T1_WIN' | 'DRAW' | 'T2_WIN'
