@@ -1,7 +1,6 @@
 requirements.txt
 check_connection.ipynb
 ol_supabase_codes/
-images/
 *.py
 __pycache__/
 .venv/
