@@ -216,3 +216,10 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+ol_supabase_codes/
+.env.local
+
+# Node / Vite
+node_modules/
+dist/
+.env.*.local

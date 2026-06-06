@@ -1,0 +1,5 @@
+supabase>=2.31
+pandas>=3.0.3
+numpy>=2.4.6
+fastapi>=0.136.3
+python-dotenv>=0.21.0
