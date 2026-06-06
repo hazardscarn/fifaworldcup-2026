@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Shield, Check, X, FlaskConical, Trash2, Shuffle, ChevronDown, ChevronUp } from 'lucide-react'
+import { Shield, Check, X, FlaskConical, Trash2, Shuffle, ChevronDown, ChevronUp, Minus, Play } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 import { Match, MatchResult } from '../types'
@@ -12,6 +12,12 @@ interface EditState {
   result: ResultOption
   scoreA: string
   scoreB: string
+}
+
+interface LockTestResult {
+  name: string
+  status: 'pass' | 'fail' | 'skip'
+  detail: string
 }
 
 const RANDOM_RESULTS: ResultOption[] = ['T1_WIN', 'DRAW', 'T2_WIN']
@@ -37,6 +43,8 @@ export default function Admin() {
   const [bulkCount, setBulkCount] = useState(5)
   const [bulkRunning, setBulkRunning] = useState(false)
   const [expandedStages, setExpandedStages] = useState<Set<string>>(new Set(['Group Stage']))
+  const [lockTests, setLockTests] = useState<LockTestResult[]>([])
+  const [lockTesting, setLockTesting] = useState(false)
 
   useEffect(() => {
     async function load() {
@@ -141,6 +149,133 @@ export default function Admin() {
       })
       setMsg({ type: 'success', text: `✓ Cleared test results from ${futureWithResults.length} matches` })
     }
+  }
+
+  async function runLockTests() {
+    if (!user) return
+    setLockTesting(true)
+    const out: LockTestResult[] = []
+
+    // ── Test 1: isLocked() correctly identifies past dates ──
+    const past   = new Date(Date.now() - 3_600_000).toISOString()
+    const future = new Date(Date.now() + 3_600_000).toISOString()
+    out.push({
+      name: 'Frontend: isLocked() — past kickoff returns true',
+      status: isLocked(past) ? 'pass' : 'fail',
+      detail: isLocked(past)
+        ? 'isLocked("1 hour ago") → true ✓'
+        : 'BUG: isLocked("1 hour ago") returned false',
+    })
+    out.push({
+      name: 'Frontend: isLocked() — future kickoff returns false',
+      status: !isLocked(future) ? 'pass' : 'fail',
+      detail: !isLocked(future)
+        ? 'isLocked("1 hour from now") → false ✓'
+        : 'BUG: isLocked("1 hour from now") returned true',
+    })
+
+    // Fetch this admin user's own predictions to test DB RLS
+    const { data: myPreds } = await supabase
+      .from('predictions')
+      .select('id, match_no, t1_win_prob, draw_prob, t2_win_prob')
+      .eq('user_id', user.id)
+
+    const allPreds = myPreds ?? []
+
+    // ── Test 2: DB blocks UPDATE on a locked match prediction ──
+    const lockedPred = allPreds.find(p => {
+      const m = matches.find(m => m.MatchNo === p.match_no)
+      return m && isLocked(m.DateTime_CST ?? '')
+    })
+
+    if (!lockedPred) {
+      out.push({
+        name: 'Database RLS: UPDATE blocked on locked match',
+        status: 'skip',
+        detail: 'Skipped — you have no prediction on a past match yet. Make a prediction then let the match start, or use Test Mode to add a result to a past match first.',
+      })
+    } else {
+      const m = matches.find(m => m.MatchNo === lockedPred.match_no)!
+      // Attempt to update with identical values — the RLS policy should block it
+      const { data, error } = await supabase
+        .from('predictions')
+        .update({
+          t1_win_prob: lockedPred.t1_win_prob,
+          draw_prob:   lockedPred.draw_prob,
+          t2_win_prob: lockedPred.t2_win_prob,
+        })
+        .eq('id', lockedPred.id)
+        .select('id')
+
+      if (error) {
+        out.push({
+          name: 'Database RLS: UPDATE blocked on locked match',
+          status: 'fail',
+          detail: `Unexpected DB error: ${error.message}`,
+        })
+      } else if ((data?.length ?? 0) === 0) {
+        out.push({
+          name: 'Database RLS: UPDATE blocked on locked match',
+          status: 'pass',
+          detail: `Match #${m.MatchNo} (${m.TeamA} vs ${m.TeamB}) — 0 rows updated, RLS blocked it correctly ✓`,
+        })
+      } else {
+        out.push({
+          name: 'Database RLS: UPDATE blocked on locked match',
+          status: 'fail',
+          detail: `SECURITY ISSUE: ${data!.length} row(s) updated on a locked match — the DB policy is not working!`,
+        })
+      }
+    }
+
+    // ── Test 3: DB allows UPDATE on an upcoming match prediction ──
+    const unlockedPred = allPreds.find(p => {
+      const m = matches.find(m => m.MatchNo === p.match_no)
+      return m && !isLocked(m.DateTime_CST ?? '')
+    })
+
+    if (!unlockedPred) {
+      out.push({
+        name: 'Database RLS: UPDATE allowed on upcoming match',
+        status: 'skip',
+        detail: 'Skipped — you have no prediction on an upcoming match. Make a prediction on a future match to test this.',
+      })
+    } else {
+      const m = matches.find(m => m.MatchNo === unlockedPred.match_no)!
+      // Update with identical values — this is a no-op but RLS should allow it
+      const { data, error } = await supabase
+        .from('predictions')
+        .update({
+          t1_win_prob: unlockedPred.t1_win_prob,
+          draw_prob:   unlockedPred.draw_prob,
+          t2_win_prob: unlockedPred.t2_win_prob,
+        })
+        .eq('id', unlockedPred.id)
+        .select('id')
+
+      if (error) {
+        out.push({
+          name: 'Database RLS: UPDATE allowed on upcoming match',
+          status: 'fail',
+          detail: `Unexpected DB error: ${error.message}`,
+        })
+      } else if ((data?.length ?? 0) > 0) {
+        out.push({
+          name: 'Database RLS: UPDATE allowed on upcoming match',
+          status: 'pass',
+          detail: `Match #${m.MatchNo} (${m.TeamA} vs ${m.TeamB}) — ${data!.length} row updated, RLS correctly allowed it ✓`,
+        })
+      } else {
+        out.push({
+          name: 'Database RLS: UPDATE allowed on upcoming match',
+          status: 'fail',
+          detail: 'BUG: 0 rows updated on a future match — the policy is blocking valid updates!',
+        })
+      }
+    }
+
+    setLockTests(out)
+    setLockTesting(false)
   }
 
   function toggleStage(stage: string) {
@@ -253,6 +388,79 @@ export default function Admin() {
           </div>
         </div>
       )}
+
+      {/* ── Lock Enforcement Tests ── */}
+      <div style={{ borderRadius: 14, border: '1px solid #E2E8F0', overflow: 'hidden' }}>
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '14px 18px',
+          background: '#F8FAFC',
+          borderBottom: lockTests.length ? '1px solid #E2E8F0' : 'none',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <FlaskConical size={16} style={{ color: '#7C3AED' }} />
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 800, color: '#0F172A' }}>Lock Enforcement Tests</div>
+              <div style={{ fontSize: 11, color: '#94A3B8', marginTop: 1 }}>
+                Verify predictions cannot be changed after kickoff
+              </div>
+            </div>
+          </div>
+          <button
+            onClick={runLockTests}
+            disabled={lockTesting}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 6,
+              padding: '8px 16px', borderRadius: 10, fontSize: 13, fontWeight: 700, cursor: 'pointer',
+              background: lockTesting ? '#F1F5F9' : 'linear-gradient(135deg,#7C3AED,#6D28D9)',
+              color: lockTesting ? '#94A3B8' : '#fff', border: 'none',
+              opacity: lockTesting ? 0.7 : 1,
+            }}
+          >
+            <Play size={13} />
+            {lockTesting ? 'Running…' : lockTests.length ? 'Re-run Tests' : 'Run Tests'}
+          </button>
+        </div>
+
+        {lockTests.length > 0 && (
+          <div style={{ padding: '14px 18px', display: 'grid', gap: 8 }}>
+            {lockTests.map((t, i) => {
+              const statusColor = t.status === 'pass' ? '#15803D' : t.status === 'fail' ? '#DC2626' : '#64748B'
+              const statusBg    = t.status === 'pass' ? 'rgba(22,163,74,0.07)' : t.status === 'fail' ? 'rgba(239,68,68,0.07)' : '#F8FAFC'
+              const statusBorder = t.status === 'pass' ? 'rgba(22,163,74,0.2)' : t.status === 'fail' ? 'rgba(239,68,68,0.2)' : '#E2E8F0'
+              return (
+                <div key={i} style={{
+                  display: 'flex', alignItems: 'flex-start', gap: 12,
+                  padding: '10px 14px', borderRadius: 10,
+                  background: statusBg, border: `1px solid ${statusBorder}`,
+                }}>
+                  <div style={{ marginTop: 1, flexShrink: 0 }}>
+                    {t.status === 'pass' ? <Check size={15} style={{ color: '#15803D' }} />
+                    : t.status === 'fail' ? <X size={15} style={{ color: '#DC2626' }} />
+                    : <Minus size={15} style={{ color: '#94A3B8' }} />}
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: '#0F172A', marginBottom: 2 }}>{t.name}</div>
+                    <div style={{ fontSize: 12, color: '#64748B', lineHeight: 1.5 }}>{t.detail}</div>
+                  </div>
+                  <span style={{
+                    flexShrink: 0, fontSize: 10, fontWeight: 800, letterSpacing: '0.08em',
+                    padding: '3px 8px', borderRadius: 999,
+                    background: t.status === 'pass' ? 'rgba(22,163,74,0.12)' : t.status === 'fail' ? 'rgba(239,68,68,0.12)' : '#F1F5F9',
+                    color: statusColor,
+                  }}>
+                    {t.status.toUpperCase()}
+                  </span>
+                </div>
+              )
+            })}
+            <div style={{ fontSize: 11, color: '#94A3B8', marginTop: 4 }}>
+              {lockTests.filter(t => t.status === 'pass').length}/{lockTests.filter(t => t.status !== 'skip').length} tests passed
+              {lockTests.some(t => t.status === 'skip') && ` · ${lockTests.filter(t => t.status === 'skip').length} skipped (need predictions to test DB layer)`}
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* ── Status message ── */}
       {msg && (
