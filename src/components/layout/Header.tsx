@@ -10,7 +10,7 @@ const navLinks = [
   { to: '/dashboard',   label: 'Dashboard',   icon: BarChart2, exact: false },
   { to: '/schedule',    label: 'Schedule',    icon: Calendar,  exact: false },
   { to: '/leaderboard', label: 'Standings',   icon: Trophy,    exact: false },
-  { to: '/about',       label: 'About',       icon: Info,      exact: false },
+  { to: '/about',       label: 'Rules',       icon: Info,      exact: false },
 ]
 
 export default function Header() {

@@ -553,6 +553,56 @@ export default function About() {
         </div>
       </div>
 
+      {/* ── Contact ── */}
+      <div style={{
+        borderRadius: 16, padding: '24px 28px',
+        background: '#F8FAFC', border: '1px solid #E2E8F0',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+          <div style={{ fontSize: 20 }}>✉️</div>
+          <div>
+            <div style={{ fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.15em', color: '#94A3B8' }}>Need Help?</div>
+            <h2 style={{ fontSize: 18, fontWeight: 800, color: '#0F172A' }}>Primary Contacts</h2>
+          </div>
+        </div>
+        <p style={{ fontSize: 13, color: '#64748B', marginBottom: 16, lineHeight: 1.6 }}>
+          For any questions, scoring disputes, or technical issues — reach out to either of the contacts below.
+        </p>
+        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+          {[
+            { name: 'Dan Calistrate', email: 'Dan.Calistrate@nrg.com' },
+            { name: 'David Babu',     email: 'David.Babu@nrg.com' },
+          ].map(c => (
+            <a
+              key={c.email}
+              href={`mailto:${c.email}`}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 12,
+                padding: '12px 18px', borderRadius: 12, textDecoration: 'none',
+                background: '#fff', border: '1px solid #E2E8F0',
+                transition: 'border-color 0.15s',
+                flex: '1 1 200px',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.borderColor = '#16A34A')}
+              onMouseLeave={e => (e.currentTarget.style.borderColor = '#E2E8F0')}
+            >
+              <div style={{
+                width: 36, height: 36, borderRadius: 10, flexShrink: 0,
+                background: 'linear-gradient(135deg,#16A34A,#15803D)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 15, color: '#fff', fontWeight: 800,
+              }}>
+                {c.name.charAt(0)}
+              </div>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: '#0F172A' }}>{c.name}</div>
+                <div style={{ fontSize: 12, color: '#16A34A' }}>{c.email}</div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+
     </div>
   )
 }
