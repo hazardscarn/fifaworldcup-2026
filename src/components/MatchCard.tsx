@@ -52,7 +52,12 @@ export default function MatchCard({ match, prediction, result, compact }: Props)
   return (
     <div
       className="card-hover overflow-hidden"
-      style={{ boxShadow: cardShadow }}
+      style={{
+        boxShadow: cardShadow,
+        opacity: locked && !result ? 0.72 : 1,
+        filter: locked && !result ? 'grayscale(0.25)' : 'none',
+        transition: 'opacity 0.2s ease, filter 0.2s ease',
+      }}
     >
       {/* Top accent bar */}
       <div style={{ height: 3, background: topBarColor }} />
