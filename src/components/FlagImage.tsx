@@ -11,7 +11,9 @@ const TEAM_CODES: Record<string, string> = {
   'Scotland': 'gb-sct', 'Wales': 'gb-wls', 'Hungary': 'hu', 'Romania': 'ro',
   'Czech Republic': 'cz', 'Czechia': 'cz', 'Slovakia': 'sk', 'Slovenia': 'si',
   'Greece': 'gr', 'Sweden': 'se', 'Norway': 'no', 'Finland': 'fi',
-  'Ireland': 'ie', 'Albania': 'al',
+  'Ireland': 'ie', 'Albania': 'al', 'Bosnia & Herzegovina': 'ba',
+  'Bosnia and Herzegovina': 'ba', 'North Macedonia': 'mk', 'Kosovo': 'xk',
+  'Georgia': 'ge', 'Iceland': 'is', 'Bulgaria': 'bg', 'Montenegro': 'me',
   // CONCACAF
   'USA': 'us', 'Mexico': 'mx', 'Canada': 'ca', 'Costa Rica': 'cr',
   'Honduras': 'hn', 'Jamaica': 'jm', 'Panama': 'pa', 'El Salvador': 'sv',
