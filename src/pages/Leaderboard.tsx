@@ -87,9 +87,10 @@ export default function Leaderboard() {
               { label: 'Group Stage', w: 1,  color: '#64748B', bg: '#F1F5F9' },
               { label: 'Round of 32', w: 2,  color: '#1D4ED8', bg: 'rgba(59,130,246,0.1)' },
               { label: 'Round of 16', w: 3,  color: '#1D4ED8', bg: 'rgba(59,130,246,0.1)' },
-              { label: 'Quarter-Final', w: 5, color: '#DC2626', bg: 'rgba(239,68,68,0.1)' },
-              { label: 'Semi-Final',  w: 8,  color: '#7C3AED', bg: 'rgba(168,85,247,0.1)' },
-              { label: 'Final',       w: 13, color: '#B45309', bg: 'rgba(234,179,8,0.12)' },
+              { label: 'Quarter-Final', w: 5,  color: '#DC2626', bg: 'rgba(239,68,68,0.1)' },
+              { label: 'Third Place',  w: 6,  color: '#EA580C', bg: 'rgba(234,88,12,0.08)' },
+              { label: 'Semi-Final',   w: 8,  color: '#7C3AED', bg: 'rgba(168,85,247,0.1)' },
+              { label: 'Final',        w: 13, color: '#B45309', bg: 'rgba(234,179,8,0.12)' },
             ].map(s => (
               <div key={s.label} style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '4px 10px', borderRadius: 999, background: s.bg }}>
                 <span style={{ fontSize: 12, color: '#64748B' }}>{s.label}</span>
