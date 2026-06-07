@@ -1,21 +1,37 @@
 const TEAM_CODES: Record<string, string> = {
-  'Argentina': 'ar', 'Brazil': 'br', 'France': 'fr', 'England': 'gb-eng',
-  'Germany': 'de', 'Spain': 'es', 'Portugal': 'pt', 'Netherlands': 'nl',
-  'Italy': 'it', 'Belgium': 'be', 'Croatia': 'hr', 'Morocco': 'ma',
-  'USA': 'us', 'Mexico': 'mx', 'Canada': 'ca', 'Japan': 'jp',
-  'South Korea': 'kr', 'Australia': 'au', 'Senegal': 'sn', 'Uruguay': 'uy',
-  'Colombia': 'co', 'Ecuador': 'ec', 'Ghana': 'gh', 'Nigeria': 'ng',
-  'Denmark': 'dk', 'Switzerland': 'ch', 'Poland': 'pl', 'Serbia': 'rs',
-  'Cameroon': 'cm', 'Saudi Arabia': 'sa', 'Iran': 'ir', 'Qatar': 'qa',
-  'Tunisia': 'tn', 'Egypt': 'eg', 'Algeria': 'dz', 'Chile': 'cl',
-  'Peru': 'pe', 'Venezuela': 've', 'Bolivia': 'bo', 'Paraguay': 'py',
-  'Costa Rica': 'cr', 'Honduras': 'hn', 'Jamaica': 'jm', 'Panama': 'pa',
-  'Turkey': 'tr', 'Ukraine': 'ua', 'Austria': 'at', 'Scotland': 'gb-sct',
-  'Wales': 'gb-wls', 'Hungary': 'hu', 'Romania': 'ro', 'Czech Republic': 'cz',
-  'Slovakia': 'sk', 'Slovenia': 'si', 'Greece': 'gr', 'Sweden': 'se',
-  'Norway': 'no', 'Finland': 'fi', 'Ireland': 'ie', 'Albania': 'al',
-  'South Africa': 'za', 'Czechia': 'cz', 'New Zealand': 'nz',
-  'Trinidad and Tobago': 'tt', 'Guatemala': 'gt', 'El Salvador': 'sv',
+  // South America
+  'Argentina': 'ar', 'Brazil': 'br', 'Uruguay': 'uy', 'Colombia': 'co',
+  'Ecuador': 'ec', 'Venezuela': 've', 'Paraguay': 'py', 'Bolivia': 'bo',
+  'Chile': 'cl', 'Peru': 'pe',
+  // Europe
+  'France': 'fr', 'England': 'gb-eng', 'Germany': 'de', 'Spain': 'es',
+  'Portugal': 'pt', 'Netherlands': 'nl', 'Italy': 'it', 'Belgium': 'be',
+  'Croatia': 'hr', 'Denmark': 'dk', 'Switzerland': 'ch', 'Poland': 'pl',
+  'Serbia': 'rs', 'Turkey': 'tr', 'Ukraine': 'ua', 'Austria': 'at',
+  'Scotland': 'gb-sct', 'Wales': 'gb-wls', 'Hungary': 'hu', 'Romania': 'ro',
+  'Czech Republic': 'cz', 'Czechia': 'cz', 'Slovakia': 'sk', 'Slovenia': 'si',
+  'Greece': 'gr', 'Sweden': 'se', 'Norway': 'no', 'Finland': 'fi',
+  'Ireland': 'ie', 'Albania': 'al',
+  // CONCACAF
+  'USA': 'us', 'Mexico': 'mx', 'Canada': 'ca', 'Costa Rica': 'cr',
+  'Honduras': 'hn', 'Jamaica': 'jm', 'Panama': 'pa', 'El Salvador': 'sv',
+  'Guatemala': 'gt', 'Trinidad and Tobago': 'tt', 'Haiti': 'ht',
+  'Curacao': 'cw', 'Cuba': 'cu',
+  // Africa
+  'Morocco': 'ma', 'Senegal': 'sn', 'Nigeria': 'ng', 'Ghana': 'gh',
+  'Cameroon': 'cm', 'Tunisia': 'tn', 'Egypt': 'eg', 'Algeria': 'dz',
+  'South Africa': 'za', 'Mali': 'ml', 'Cape Verde': 'cv',
+  "Ivory Coast": 'ci', "Côte d'Ivoire": 'ci', 'DR Congo': 'cd',
+  'Congo DR': 'cd', 'Angola': 'ao', 'Benin': 'bj', 'Tanzania': 'tz',
+  'Comoros': 'km', 'Rwanda': 'rw', 'Ethiopia': 'et', 'Kenya': 'ke',
+  'Zimbabwe': 'zw', 'Uganda': 'ug',
+  // Asia
+  'Japan': 'jp', 'South Korea': 'kr', 'Australia': 'au', 'Iran': 'ir',
+  'Saudi Arabia': 'sa', 'Qatar': 'qa', 'Iraq': 'iq', 'Indonesia': 'id',
+  'Bahrain': 'bh', 'Uzbekistan': 'uz', 'Jordan': 'jo', 'Oman': 'om',
+  'China': 'cn', 'Thailand': 'th',
+  // Oceania / Other
+  'New Zealand': 'nz',
 }
 
 interface Props {
