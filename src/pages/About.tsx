@@ -394,6 +394,11 @@ export default function About() {
             In this pool, you assign a <strong style={{ color: '#0F172A' }}>probability distribution</strong> across the three possible
             outcomes of every match. Your inputs for each game must simply add up to <strong style={{ color: '#0F172A' }}>100%</strong>.
           </p>
+          <p style={{ fontSize: 14, color: '#475569', lineHeight: 1.75, marginBottom: 20 }}>
+            Results are based on <strong style={{ color: '#0F172A' }}>90 minutes of regular time plus any added time</strong>.
+            For knockout matches that go to extra time, the result after <strong style={{ color: '#0F172A' }}>120 minutes</strong> is used.{' '}
+            <strong style={{ color: '#0F172A' }}>A game decided by a penalty shootout is recorded as a Draw</strong> — the shootout only determines who advances, not the scoring outcome.
+          </p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10 }}>
             {[
               { label: 'Home Win (Team A)', color: '#1D4ED8', bg: 'rgba(59,130,246,0.07)', border: 'rgba(59,130,246,0.2)' },
