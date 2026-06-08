@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
-import { Home, BarChart2, Calendar, Trophy, Info, LogOut, User, Shield, Menu, X } from 'lucide-react'
+import { Home, BarChart2, Calendar, Trophy, Info, MessageCircle, LogOut, User, Shield, Menu, X } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 import { cn } from '../../lib/utils'
 import { trophyIcon } from '../../lib/images'
@@ -10,7 +10,8 @@ const navLinks = [
   { to: '/dashboard',   label: 'Dashboard',   icon: BarChart2, exact: false },
   { to: '/schedule',    label: 'Schedule',    icon: Calendar,  exact: false },
   { to: '/leaderboard', label: 'Standings',   icon: Trophy,    exact: false },
-  { to: '/about',       label: 'Rules',       icon: Info,      exact: false },
+  { to: '/about',       label: 'Rules',       icon: Info,          exact: false },
+  { to: '/chat',        label: 'Chat',        icon: MessageCircle, exact: false },
 ]
 
 export default function Header() {

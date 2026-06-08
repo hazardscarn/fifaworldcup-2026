@@ -30,7 +30,7 @@ export default function Home() {
       ])
 
       const all: Match[] = matchRes.data ?? []
-      setUpcomingMatches(all.filter(m => m.DateTime_CST && !isLocked(m.DateTime_CST)).slice(0, 6))
+      setUpcomingMatches(all.filter(m => m.DateTime_CST && !isLocked(m.DateTime_CST)).slice(0, 4))
       setRecentMatches(all.filter(m => m.DateTime_CST && isLocked(m.DateTime_CST)).slice(-3).reverse())
 
       const predMap: Record<number, Prediction> = {}
@@ -164,7 +164,7 @@ export default function Home() {
         ) : (
           <div style={{ display: 'flex', gap: 14, alignItems: 'stretch' }}>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14 }}>
                 {upcomingMatches.map((m, i) => (
                   <div key={m.MatchNo} className="animate-slide-up" style={{ animationDelay: `${i * 50}ms` }}>
                     <MatchCard match={m} prediction={predictions[m.MatchNo]} result={results[m.MatchNo]} />
@@ -172,7 +172,7 @@ export default function Home() {
                 ))}
               </div>
             </div>
-            <PlayerCarousel width={260} />
+            <PlayerCarousel width={320} />
           </div>
         )}
       </div>

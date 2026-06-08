@@ -12,6 +12,7 @@ import Leaderboard from './pages/Leaderboard'
 import Admin from './pages/Admin'
 import Profile from './pages/Profile'
 import About from './pages/About'
+import Chat from './pages/Chat'
 
 export default function App() {
   return (
@@ -37,6 +38,7 @@ export default function App() {
             <Route path="leaderboard" element={<Leaderboard />} />
             <Route path="profile" element={<Profile />} />
             <Route path="about" element={<About />} />
+            <Route path="chat" element={<Chat />} />
             <Route
               path="admin"
               element={
