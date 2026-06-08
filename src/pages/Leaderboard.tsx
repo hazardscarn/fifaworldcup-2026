@@ -192,7 +192,7 @@ export default function Leaderboard() {
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
                       <FlagImage team={entry.favorite_team} size="sm" />
                       <span style={{ fontSize: 11, color: '#94A3B8' }}>
-                        @{entry.username}
+                        {entry.email ?? `@${entry.username}`}
                         {entry.favorite_team && <span> · {entry.favorite_team} {getFlag(entry.favorite_team)}</span>}
                       </span>
                     </div>

@@ -64,6 +64,7 @@ export interface LeaderboardEntry {
   user_id: string
   username: string
   display_name: string
+  email: string | null
   favorite_team: string | null
   predictions_made: number
   matches_scored: number
