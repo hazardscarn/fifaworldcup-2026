@@ -50,8 +50,12 @@ export default function Register() {
       favoriteTeam: form.favoriteTeam,
     })
     setLoading(false)
-    if (err) setError(err)
-    else navigate('/')
+    if (err) {
+      if (err.toLowerCase().includes('already registered') || err.toLowerCase().includes('duplicate') || err.toLowerCase().includes('unique'))
+        setError('That username is already taken — please choose another.')
+      else
+        setError(err)
+    } else navigate('/')
   }
 
   return (
