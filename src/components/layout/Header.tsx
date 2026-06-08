@@ -1,9 +1,10 @@
 import { useState } from 'react'
-import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { Home, BarChart2, Calendar, Trophy, Info, MessageCircle, LogOut, User, Shield, Menu, X } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 import { cn } from '../../lib/utils'
 import { trophyIcon } from '../../lib/images'
+import { useMentionBadge } from '../../hooks/useMentionBadge'
 
 const navLinks = [
   { to: '/',            label: 'Home',        icon: Home,     exact: true },
@@ -17,7 +18,9 @@ const navLinks = [
 export default function Header() {
   const { profile, signOut } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
   const [menuOpen, setMenuOpen] = useState(false)
+  const { count: mentionCount } = useMentionBadge()
 
   async function handleSignOut() {
     await signOut()
@@ -50,24 +53,41 @@ export default function Header() {
 
         {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-1">
-          {navLinks.map(({ to, label, icon: Icon, exact }) => (
-            <NavLink
-              key={to}
-              to={to}
-              end={exact}
-              className={({ isActive }) =>
-                cn(
-                  'flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200',
-                  isActive
-                    ? 'bg-green-50 text-green-700 border border-green-200'
-                    : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100'
-                )
-              }
-            >
-              <Icon size={15} />
-              {label}
-            </NavLink>
-          ))}
+          {navLinks.map(({ to, label, icon: Icon, exact }) => {
+            const showBadge = to === '/chat' && mentionCount > 0 && location.pathname !== '/chat'
+            return (
+              <NavLink
+                key={to}
+                to={to}
+                end={exact}
+                className={({ isActive }) =>
+                  cn(
+                    'flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200',
+                    isActive
+                      ? 'bg-green-50 text-green-700 border border-green-200'
+                      : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100'
+                  )
+                }
+              >
+                <div style={{ position: 'relative' }}>
+                  <Icon size={15} />
+                  {showBadge && (
+                    <span style={{
+                      position: 'absolute', top: -6, right: -7,
+                      background: '#EF4444', color: '#fff',
+                      fontSize: 9, fontWeight: 800, lineHeight: 1,
+                      padding: '2px 4px', borderRadius: 999,
+                      minWidth: 14, textAlign: 'center',
+                      boxShadow: '0 0 0 2px #fff',
+                    }}>
+                      {mentionCount > 9 ? '9+' : mentionCount}
+                    </span>
+                  )}
+                </div>
+                {label}
+              </NavLink>
+            )
+          })}
           {profile?.is_admin && (
             <NavLink
               to="/admin"
@@ -120,25 +140,50 @@ export default function Header() {
       {/* Mobile menu */}
       {menuOpen && (
         <div className="md:hidden border-t border-slate-200 bg-white/98 px-4 py-3 space-y-1 animate-slide-up">
-          {navLinks.map(({ to, label, icon: Icon, exact }) => (
-            <NavLink
-              key={to}
-              to={to}
-              end={exact}
-              onClick={() => setMenuOpen(false)}
-              className={({ isActive }) =>
-                cn(
-                  'flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors',
-                  isActive
-                    ? 'bg-green-50 text-green-700'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                )
-              }
-            >
-              <Icon size={16} />
-              {label}
-            </NavLink>
-          ))}
+          {navLinks.map(({ to, label, icon: Icon, exact }) => {
+            const showBadge = to === '/chat' && mentionCount > 0 && location.pathname !== '/chat'
+            return (
+              <NavLink
+                key={to}
+                to={to}
+                end={exact}
+                onClick={() => setMenuOpen(false)}
+                className={({ isActive }) =>
+                  cn(
+                    'flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors',
+                    isActive
+                      ? 'bg-green-50 text-green-700'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                  )
+                }
+              >
+                <div style={{ position: 'relative' }}>
+                  <Icon size={16} />
+                  {showBadge && (
+                    <span style={{
+                      position: 'absolute', top: -6, right: -7,
+                      background: '#EF4444', color: '#fff',
+                      fontSize: 9, fontWeight: 800, lineHeight: 1,
+                      padding: '2px 4px', borderRadius: 999,
+                      minWidth: 14, textAlign: 'center',
+                      boxShadow: '0 0 0 2px #fff',
+                    }}>
+                      {mentionCount > 9 ? '9+' : mentionCount}
+                    </span>
+                  )}
+                </div>
+                {label}
+                {showBadge && (
+                  <span style={{
+                    marginLeft: 'auto', background: '#EF4444', color: '#fff',
+                    fontSize: 10, fontWeight: 800, padding: '1px 7px', borderRadius: 999,
+                  }}>
+                    {mentionCount > 9 ? '9+' : mentionCount} new
+                  </span>
+                )}
+              </NavLink>
+            )
+          })}
           {profile?.is_admin && (
             <NavLink
               to="/admin"
