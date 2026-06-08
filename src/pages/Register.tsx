@@ -107,7 +107,7 @@ export default function Register() {
               <label className="label">Username <span style={{ color: '#DC2626' }}>*</span></label>
               <input type="text" className="input" placeholder="john_doe"
                 value={form.username} onChange={e => set('username', e.target.value.toLowerCase())} required />
-              <p className="text-xs text-slate-500 mt-1">lowercase · no spaces</p>
+              <p className="text-xs text-slate-500 mt-1">lowercase · no spaces · <strong>remember this!</strong></p>
             </div>
             <div>
               <label className="label">
@@ -139,6 +139,16 @@ export default function Register() {
             <select className="input" value={form.favoriteTeam} onChange={e => set('favoriteTeam', e.target.value)}>
               {FAVORITE_TEAMS.map(t => <option key={t} value={t}>{t}</option>)}
             </select>
+          </div>
+
+          {/* Reminder */}
+          <div style={{
+            display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 12,
+            color: '#92400E', background: '#FFFBEB',
+            border: '1px solid #FDE68A', borderRadius: 10, padding: '10px 14px',
+          }}>
+            <span style={{ flexShrink: 0 }}>⚠️</span>
+            <span>Please remember your <strong>username</strong> and <strong>password</strong> — you'll need them every time you sign in. There is no password reset available.</span>
           </div>
 
           {error && (
