@@ -75,9 +75,26 @@ export function getFlag(team: string | null | undefined): string {
 }
 
 export const FAVORITE_TEAMS = [
-  'Argentina', 'Brazil', 'France','Egypt', 'England', 'Germany', 'Spain',
-  'Portugal', 'Netherlands', 'Italy', 'Belgium', 'Croatia', 'Morocco',
-  'USA', 'Mexico', 'Canada', 'Japan', 'South Korea', 'Australia',
-  'Senegal', 'Uruguay', 'Colombia', 'Ecuador', 'Ghana', 'Nigeria',
-  'Denmark', 'Switzerland', 'Poland', 'Serbia', 'Cameroon', 'Other'
+  // Africa
+  'Algeria', 'Angola', 'Cameroon', 'Cape Verde', 'DR Congo',
+  'Egypt', 'Ghana', 'Ivory Coast', 'Mali', 'Morocco',
+  'Nigeria', 'Senegal', 'South Africa', 'Tunisia',
+  // Asia / Oceania
+  'Australia', 'Bahrain', 'Indonesia', 'Iran', 'Iraq',
+  'Japan', 'Jordan', 'New Zealand', 'Saudi Arabia', 'South Korea',
+  'Uzbekistan',
+  // CONCACAF
+  'Canada', 'Costa Rica', 'Cuba', 'Curacao', 'El Salvador',
+  'Haiti', 'Honduras', 'Jamaica', 'Mexico', 'Panama',
+  'Trinidad and Tobago', 'USA',
+  // Europe
+  'Albania', 'Austria', 'Bosnia & Herzegovina', 'Croatia', 'Denmark',
+  'England', 'France', 'Georgia', 'Germany', 'Hungary',
+  'Netherlands', 'Poland', 'Portugal', 'Romania', 'Scotland',
+  'Serbia', 'Slovakia', 'Slovenia', 'Spain', 'Switzerland',
+  'Turkey', 'Ukraine',
+  // South America
+  'Argentina', 'Bolivia', 'Brazil', 'Chile', 'Colombia',
+  'Ecuador', 'Paraguay', 'Peru', 'Uruguay', 'Venezuela',
+  'Other',
 ]
