@@ -51,21 +51,31 @@ export function cn(...classes: (string | undefined | null | false)[]): string {
 }
 
 export const TEAM_FLAGS: Record<string, string> = {
-  'Argentina': '🇦🇷', 'Brazil': '🇧🇷', 'France': '🇫🇷', 'England': '🏴󠁧󠁢󠁥󠁮󠁧󠁿','Egypt': '🏴󠁧󠁢󠁥󠁮󠁧󠁿',
-  'Germany': '🇩🇪', 'Spain': '🇪🇸', 'Portugal': '🇵🇹', 'Netherlands': '🇳🇱',
-  'Italy': '🇮🇹', 'Belgium': '🇧🇪', 'Croatia': '🇭🇷', 'Morocco': '🇲🇦',
-  'USA': '🇺🇸', 'Mexico': '🇲🇽', 'Canada': '🇨🇦', 'Japan': '🇯🇵',
-  'South Korea': '🇰🇷', 'Australia': '🇦🇺', 'Senegal': '🇸🇳', 'Uruguay': '🇺🇾',
-  'Colombia': '🇨🇴', 'Ecuador': '🇪🇨', 'Ghana': '🇬🇭', 'Nigeria': '🇳🇬',
-  'Denmark': '🇩🇰', 'Switzerland': '🇨🇭', 'Poland': '🇵🇱', 'Serbia': '🇷🇸',
-  'Cameroon': '🇨🇲', 'Saudi Arabia': '🇸🇦', 'Iran': '🇮🇷', 'Qatar': '🇶🇦',
-  'Tunisia': '🇹🇳', 'Egypt': '🇪🇬', 'Algeria': '🇩🇿', 'Chile': '🇨🇱',
-  'Peru': '🇵🇪', 'Venezuela': '🇻🇪', 'Bolivia': '🇧🇴', 'Paraguay': '🇵🇾',
-  'Costa Rica': '🇨🇷', 'Honduras': '🇭🇳', 'Jamaica': '🇯🇲', 'Panama': '🇵🇦',
-  'Turkey': '🇹🇷', 'Ukraine': '🇺🇦', 'Austria': '🇦🇹', 'Scotland': '🏴󠁧󠁢󠁳󠁣󠁴󠁿',
-  'Wales': '🏴󠁧󠁢󠁷󠁬󠁳󠁿', 'Hungary': '🇭🇺', 'Romania': '🇷🇴', 'Czech Republic': '🇨🇿',
-  'Slovakia': '🇸🇰', 'Slovenia': '🇸🇮', 'Greece': '🇬🇷', 'Sweden': '🇸🇪',
-  'Norway': '🇳🇴', 'Finland': '🇫🇮', 'Ireland': '🇮🇪', 'Albania': '🇦🇱',
+  // South America
+  'Argentina': '🇦🇷', 'Brazil': '🇧🇷', 'Uruguay': '🇺🇾', 'Colombia': '🇨🇴',
+  'Ecuador': '🇪🇨', 'Venezuela': '🇻🇪', 'Paraguay': '🇵🇾', 'Bolivia': '🇧🇴',
+  'Chile': '🇨🇱', 'Peru': '🇵🇪',
+  // Europe — England/Scotland/Wales use 🇬🇧 (tag-sequence emojis don't render on Windows)
+  'France': '🇫🇷', 'England': '🇬🇧', 'Germany': '🇩🇪', 'Spain': '🇪🇸',
+  'Portugal': '🇵🇹', 'Netherlands': '🇳🇱', 'Croatia': '🇭🇷', 'Denmark': '🇩🇰',
+  'Switzerland': '🇨🇭', 'Poland': '🇵🇱', 'Serbia': '🇷🇸', 'Turkey': '🇹🇷',
+  'Ukraine': '🇺🇦', 'Austria': '🇦🇹', 'Scotland': '🇬🇧', 'Wales': '🇬🇧',
+  'Hungary': '🇭🇺', 'Romania': '🇷🇴', 'Slovakia': '🇸🇰', 'Slovenia': '🇸🇮',
+  'Albania': '🇦🇱', 'Georgia': '🇬🇪', 'Bosnia & Herzegovina': '🇧🇦',
+  // Africa
+  'Morocco': '🇲🇦', 'Senegal': '🇸🇳', 'Nigeria': '🇳🇬', 'Ghana': '🇬🇭',
+  'Cameroon': '🇨🇲', 'Tunisia': '🇹🇳', 'Egypt': '🇪🇬', 'Algeria': '🇩🇿',
+  'South Africa': '🇿🇦', 'Mali': '🇲🇱', 'Cape Verde': '🇨🇻',
+  'Ivory Coast': '🇨🇮', 'DR Congo': '🇨🇩', 'Angola': '🇦🇴',
+  // CONCACAF
+  'USA': '🇺🇸', 'Mexico': '🇲🇽', 'Canada': '🇨🇦', 'Costa Rica': '🇨🇷',
+  'Honduras': '🇭🇳', 'Jamaica': '🇯🇲', 'Panama': '🇵🇦', 'Haiti': '🇭🇹',
+  'El Salvador': '🇸🇻', 'Cuba': '🇨🇺', 'Curacao': '🇨🇼',
+  'Trinidad and Tobago': '🇹🇹',
+  // Asia / Oceania
+  'Japan': '🇯🇵', 'South Korea': '🇰🇷', 'Australia': '🇦🇺', 'Iran': '🇮🇷',
+  'Saudi Arabia': '🇸🇦', 'Iraq': '🇮🇶', 'Indonesia': '🇮🇩', 'Bahrain': '🇧🇭',
+  'Uzbekistan': '🇺🇿', 'Jordan': '🇯🇴', 'New Zealand': '🇳🇿',
   'TBD': '🏳️', 'TBC': '🏳️',
 }
 
