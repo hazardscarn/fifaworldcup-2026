@@ -51,7 +51,7 @@ export function cn(...classes: (string | undefined | null | false)[]): string {
 }
 
 export const TEAM_FLAGS: Record<string, string> = {
-  'Argentina': '🇦🇷', 'Brazil': '🇧🇷', 'France': '🇫🇷', 'England': '🏴󠁧󠁢󠁥󠁮󠁧󠁿',
+  'Argentina': '🇦🇷', 'Brazil': '🇧🇷', 'France': '🇫🇷', 'England': '🏴󠁧󠁢󠁥󠁮󠁧󠁿','Egypt': '🏴󠁧󠁢󠁥󠁮󠁧󠁿',
   'Germany': '🇩🇪', 'Spain': '🇪🇸', 'Portugal': '🇵🇹', 'Netherlands': '🇳🇱',
   'Italy': '🇮🇹', 'Belgium': '🇧🇪', 'Croatia': '🇭🇷', 'Morocco': '🇲🇦',
   'USA': '🇺🇸', 'Mexico': '🇲🇽', 'Canada': '🇨🇦', 'Japan': '🇯🇵',
@@ -75,9 +75,9 @@ export function getFlag(team: string | null | undefined): string {
 }
 
 export const FAVORITE_TEAMS = [
-  'Argentina', 'Brazil', 'France', 'England', 'Germany', 'Spain',
+  'Argentina', 'Brazil', 'France','Egypt', 'England', 'Germany', 'Spain',
   'Portugal', 'Netherlands', 'Italy', 'Belgium', 'Croatia', 'Morocco',
   'USA', 'Mexico', 'Canada', 'Japan', 'South Korea', 'Australia',
   'Senegal', 'Uruguay', 'Colombia', 'Ecuador', 'Ghana', 'Nigeria',
-  'Denmark', 'Switzerland', 'Poland', 'Serbia', 'Cameroon', 'Other',
+  'Denmark', 'Switzerland', 'Poland', 'Serbia', 'Cameroon', 'Other'
 ]
