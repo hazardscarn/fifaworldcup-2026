@@ -113,7 +113,7 @@ function Collapsible({
           ? <ChevronUp size={18} style={{ color: '#94A3B8', flexShrink: 0 }} />
           : <ChevronDown size={18} style={{ color: '#94A3B8', flexShrink: 0 }} />}
       </button>
-      {open && <div style={{ padding: '24px' }}>{children}</div>}
+      {open && <div style={{ padding: '24px', background: '#fff' }}>{children}</div>}
     </div>
   )
 }
@@ -349,7 +349,7 @@ export default function About() {
       </div>
 
       {/* ── Prizes ── */}
-      <div style={{ borderRadius: 16, border: '1px solid rgba(234,179,8,0.3)', background: 'rgba(234,179,8,0.04)', overflow: 'hidden' }}>
+      <div style={{ borderRadius: 16, border: '1px solid rgba(234,179,8,0.3)', background: '#fff', overflow: 'hidden' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '18px 24px', borderBottom: '1px solid rgba(234,179,8,0.2)' }}>
           <div style={{ width: 36, height: 36, borderRadius: 10, background: 'linear-gradient(135deg,#D97706,#B45309)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <Gift size={17} color="#fff" />
@@ -368,7 +368,7 @@ export default function About() {
               { rank: '🥈 2nd', label: 'Runner-Up Prize' },
               { rank: '🥉 3rd', label: 'Third Place Prize' },
             ].map(p => (
-              <div key={p.rank} style={{ flex: '1 1 160px', padding: '12px 16px', borderRadius: 12, background: '#fff', border: '1px solid rgba(234,179,8,0.25)', textAlign: 'center' }}>
+              <div key={p.rank} style={{ flex: '1 1 160px', padding: '12px 16px', borderRadius: 12, background: '#FFFBEB', border: '1px solid rgba(234,179,8,0.25)', textAlign: 'center' }}>
                 <div style={{ fontSize: 20, marginBottom: 6 }}>{p.rank}</div>
                 <div style={{ fontSize: 12, color: '#64748B', fontWeight: 600 }}>{p.label}</div>
               </div>
@@ -378,7 +378,7 @@ export default function About() {
       </div>
 
       {/* ── Probabilistic Forecasting ── */}
-      <div style={{ borderRadius: 16, border: '1px solid #E2E8F0', overflow: 'hidden' }}>
+      <div style={{ borderRadius: 16, border: '1px solid #E2E8F0', background: '#fff', overflow: 'hidden' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '18px 24px', background: '#F8FAFC', borderBottom: '1px solid #E2E8F0' }}>
           <div style={{ width: 36, height: 36, borderRadius: 10, background: 'linear-gradient(135deg,#7C3AED,#6D28D9)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <Brain size={17} color="#fff" />
@@ -417,7 +417,7 @@ export default function About() {
       </div>
 
       {/* ── Scoring overview ── */}
-      <div style={{ borderRadius: 16, border: '1px solid rgba(22,163,74,0.25)', background: 'rgba(22,163,74,0.03)', overflow: 'hidden' }}>
+      <div style={{ borderRadius: 16, border: '1px solid rgba(22,163,74,0.25)', background: '#fff', overflow: 'hidden' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '18px 24px', borderBottom: '1px solid rgba(22,163,74,0.2)' }}>
           <div style={{ width: 36, height: 36, borderRadius: 10, background: 'linear-gradient(135deg,#16A34A,#15803D)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <TrendingUp size={17} color="#fff" />
@@ -464,7 +464,7 @@ export default function About() {
       </div>
 
       {/* ── Live Revisions ── */}
-      <div style={{ borderRadius: 16, border: '1px solid rgba(59,130,246,0.25)', background: 'rgba(59,130,246,0.03)', overflow: 'hidden' }}>
+      <div style={{ borderRadius: 16, border: '1px solid rgba(59,130,246,0.25)', background: '#fff', overflow: 'hidden' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '18px 24px', borderBottom: '1px solid rgba(59,130,246,0.2)' }}>
           <div style={{ width: 36, height: 36, borderRadius: 10, background: 'linear-gradient(135deg,#3B82F6,#1D4ED8)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <Clock size={17} color="#fff" />
@@ -537,7 +537,7 @@ export default function About() {
       {/* ── Always make your pick warning ── */}
       <div style={{
         borderRadius: 16, padding: '20px 24px',
-        background: 'rgba(239,68,68,0.05)', border: '2px solid rgba(239,68,68,0.2)',
+        background: '#fff', border: '2px solid rgba(239,68,68,0.2)',
         display: 'flex', gap: 16, alignItems: 'flex-start',
       }}>
         <span style={{ fontSize: 28, flexShrink: 0, lineHeight: 1 }}>⚠️</span>
@@ -549,7 +549,7 @@ export default function About() {
             If a match kicks off and you haven't submitted a prediction, the system automatically
             records an <strong style={{ color: '#0F172A' }}>even split (34% / 33% / 33%)</strong> on your behalf.
           </p>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, background: '#fff', border: '1px solid #E2E8F0', borderRadius: 10, padding: '8px 14px' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, background: '#FEF2F2', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 10, padding: '8px 14px' }}>
             <code style={{ fontSize: 13, fontFamily: 'monospace', color: '#64748B' }}>
               ln(3 × ⅓) = ln(1) = <strong style={{ color: '#0F172A' }}>0.000</strong>
             </code>
@@ -621,7 +621,7 @@ export default function About() {
               const worstPossible = s.weight * Math.log(3 * 0.01)
               return (
                 <div key={s.label} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', borderRadius: 12, background: wc.bg, border: `1px solid ${wc.border}` }}>
-                  <div style={{ width: 36, height: 36, borderRadius: 9, background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
+                  <div style={{ width: 36, height: 36, borderRadius: 9, background: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
                     <span style={{ fontSize: 16, fontWeight: 900, color: wc.color }}>×{s.weight}</span>
                   </div>
                   <div style={{ flex: 1 }}>

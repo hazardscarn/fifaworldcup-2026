@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ChevronRight } from 'lucide-react'
+import { ChevronRight, Volume2, VolumeX } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 import { Match, Prediction, MatchResult, LeaderboardEntry } from '../types'
@@ -8,7 +8,12 @@ import MatchCard from '../components/MatchCard'
 import PlayerStrip from '../components/PlayerStrip'
 import PlayerCarousel from '../components/PlayerCarousel'
 import { fmtScore, isLocked } from '../lib/utils'
-import { messVsCr7, trophyIcon } from '../lib/images'
+import { trophyIcon } from '../lib/images'
+
+const WC_INTRO_VIDEO_URL = 'https://wpjwlrmprkgqlphbpjjy.supabase.co/storage/v1/object/public/videos/wcintro.mp4'
+
+interface Countdown { days: number; hours: number; minutes: number; seconds: number }
+function pad(n: number) { return String(n).padStart(2, '0') }
 
 export default function Home() {
   const { user, profile } = useAuth()
@@ -18,6 +23,16 @@ export default function Home() {
   const [results, setResults] = useState<Record<number, MatchResult>>({})
   const [myRank, setMyRank] = useState<LeaderboardEntry | null>(null)
   const [loading, setLoading] = useState(true)
+  const [nextMatch, setNextMatch] = useState<Match | null>(null)
+  const [countdown, setCountdown] = useState<Countdown | null>(null)
+  const [muted, setMuted] = useState(true)
+  const videoRef = useRef<HTMLVideoElement | null>(null)
+
+  // Callback ref runs synchronously on DOM attach — sets muted before autoplay fires.
+  // React never touches .muted after this, so toggleMute() keeps full control.
+  const videoCallbackRef = useCallback((node: HTMLVideoElement | null) => {
+    if (node) { node.muted = true; videoRef.current = node }
+  }, [])
 
   useEffect(() => {
     if (!user) return
@@ -30,27 +45,24 @@ export default function Home() {
       ])
 
       const all: Match[] = matchRes.data ?? []
-      setUpcomingMatches(all.filter(m => m.DateTime_CST && !isLocked(m.DateTime_CST)).slice(0, 4))
+      const upcoming = all.filter(m => m.DateTime_CST && !isLocked(m.DateTime_CST))
+      setUpcomingMatches(upcoming.slice(0, 4))
       setRecentMatches(all.filter(m => m.DateTime_CST && isLocked(m.DateTime_CST)).slice(-3).reverse())
+      setNextMatch(upcoming[0] ?? null)
 
       const predMap: Record<number, Prediction> = {}
       for (const p of predRes.data ?? []) predMap[p.match_no] = p
 
-      // Auto-default: locked matches with no prediction → insert even split (scores as 0)
       const lockedNoPred = all.filter(m => m.DateTime_CST && isLocked(m.DateTime_CST) && !predMap[m.MatchNo])
       if (lockedNoPred.length > 0) {
         const { data: inserted } = await supabase.from('predictions').insert(
           lockedNoPred.map(m => ({
-            user_id: user!.id,
-            match_no: m.MatchNo,
-            t1_win_prob: 0.34,
-            draw_prob: 0.33,
-            t2_win_prob: 0.33,
+            user_id: user!.id, match_no: m.MatchNo,
+            t1_win_prob: 0.34, draw_prob: 0.33, t2_win_prob: 0.33,
           }))
         ).select()
         for (const p of inserted ?? []) predMap[p.match_no] = p
       }
-
       setPredictions(predMap)
 
       const resMap: Record<number, MatchResult> = {}
@@ -62,6 +74,45 @@ export default function Home() {
     }
     load()
   }, [user])
+
+  // Countdown ticker — resets whenever nextMatch changes
+  useEffect(() => {
+    if (!nextMatch?.DateTime_CST) { setCountdown(null); return }
+    const target = new Date(nextMatch.DateTime_CST).getTime()
+
+    function tick() {
+      const diff = target - Date.now()
+      if (diff <= 0) {
+        setCountdown(null)
+        // Refetch to find the new next upcoming match
+        supabase.from('worldcup_schedule').select('*').order('DateTime_CST', { ascending: true })
+          .then(({ data }) => {
+            const all: Match[] = data ?? []
+            const upcoming = all.filter(m => m.DateTime_CST && !isLocked(m.DateTime_CST))
+            setNextMatch(upcoming[0] ?? null)
+            setUpcomingMatches(upcoming.slice(0, 4))
+            setRecentMatches(all.filter(m => m.DateTime_CST && isLocked(m.DateTime_CST)).slice(-3).reverse())
+          })
+        return
+      }
+      setCountdown({
+        days:    Math.floor(diff / 86_400_000),
+        hours:   Math.floor((diff % 86_400_000) / 3_600_000),
+        minutes: Math.floor((diff % 3_600_000) / 60_000),
+        seconds: Math.floor((diff % 60_000) / 1_000),
+      })
+    }
+    tick()
+    const id = setInterval(tick, 1000)
+    return () => clearInterval(id)
+  }, [nextMatch])
+
+  function toggleMute() {
+    const v = videoRef.current
+    if (!v) return
+    v.muted = !v.muted
+    setMuted(v.muted)
+  }
 
   const predictedCount = Object.keys(predictions).length
   const scoredCount = Object.values(predictions).filter(p => results[p.match_no]).length
@@ -78,32 +129,111 @@ export default function Home() {
   return (
     <div className="space-y-8">
 
-      {/* ── Hero ── */}
+      {/* ── Cinematic Masthead: Welcome + Video + Countdown ── */}
       <div style={{
-        borderRadius: 20, background: '#0F172A',
-        overflow: 'hidden', display: 'flex', alignItems: 'stretch',
-        boxShadow: '0 4px 32px rgba(0,0,0,0.15)', minHeight: 240,
+        borderRadius: 20, overflow: 'hidden', position: 'relative',
+        height: 520, background: '#0A0F1E',
+        boxShadow: '0 8px 48px rgba(0,0,0,0.5)',
       }}>
-        <div style={{ flex: 1, padding: '32px 40px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-            <img src={trophyIcon} alt="FIFA" style={{ width: 30, height: 30, objectFit: 'cover', borderRadius: 6 }} />
-            <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.25em', textTransform: 'uppercase', color: '#4ade80' }}>
+        {/* Background video */}
+        <video
+          ref={videoCallbackRef}
+          src={WC_INTRO_VIDEO_URL}
+          autoPlay loop playsInline
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+        />
+
+        {/* Top-left dark vignette for welcome text readability */}
+        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none',
+          background: 'linear-gradient(135deg, rgba(8,12,24,0.88) 0%, rgba(8,12,24,0.55) 35%, transparent 65%)',
+        }} />
+        {/* Bottom fade for match text */}
+        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none',
+          background: 'linear-gradient(to top, rgba(8,12,24,0.88) 0%, rgba(8,12,24,0.0) 38%)',
+        }} />
+
+        {/* ── Right frosted countdown panel ── */}
+        <div style={{
+          position: 'absolute', top: 0, right: 0, bottom: 0, width: 160, zIndex: 2,
+          background: 'rgba(5,8,20,0.60)', backdropFilter: 'blur(20px)',
+          borderLeft: '1px solid rgba(255,255,255,0.08)',
+          display: 'flex', flexDirection: 'column', alignItems: 'center',
+          justifyContent: 'center', padding: '24px 0',
+        }}>
+          {nextMatch ? (
+            <>
+              <div style={{ fontSize: 8, fontWeight: 800, letterSpacing: '0.25em', textTransform: 'uppercase', color: '#4ade80', marginBottom: 20 }}>
+                ⚽ Kicks Off In
+              </div>
+              {countdown ? (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  {[
+                    { value: countdown.days,    label: 'Days' },
+                    { value: countdown.hours,   label: 'Hours' },
+                    { value: countdown.minutes, label: 'Mins' },
+                    { value: countdown.seconds, label: 'Secs' },
+                  ].map(({ value, label }, i) => (
+                    <div key={label} style={{ textAlign: 'center' }}>
+                      {i > 0 && <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.12)', lineHeight: 1, margin: '2px 0' }}>·</div>}
+                      <div style={{ fontSize: 42, fontWeight: 900, color: '#fff', lineHeight: 1,
+                        fontVariantNumeric: 'tabular-nums', textShadow: '0 0 24px rgba(74,222,128,0.5)' }}>
+                        {pad(value)}
+                      </div>
+                      <div style={{ fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.35)',
+                        letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 2 }}>
+                        {label}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ fontSize: 30 }}>🟢</div>
+                  <div style={{ fontSize: 14, fontWeight: 800, color: '#4ade80', marginTop: 8 }}>Live Now!</div>
+                </div>
+              )}
+            </>
+          ) : (
+            <div style={{ textAlign: 'center', padding: '0 12px' }}>
+              <div style={{ fontSize: 28, marginBottom: 8 }}>🏆</div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.5)' }}>All matches complete!</div>
+            </div>
+          )}
+
+          <button onClick={toggleMute} style={{
+            marginTop: 24,
+            background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)',
+            borderRadius: 999, padding: '5px 14px', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', gap: 5,
+            color: 'rgba(255,255,255,0.6)', fontSize: 11, fontWeight: 600,
+          }}>
+            {muted ? <VolumeX size={12} /> : <Volume2 size={12} />}
+            {muted ? 'Unmute' : 'Mute'}
+          </button>
+        </div>
+
+        {/* ── Top-left: Welcome hero ── */}
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 160, zIndex: 2, padding: '32px 36px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+            <img src={trophyIcon} alt="FIFA" style={{ width: 28, height: 28, objectFit: 'cover', borderRadius: 6 }} />
+            <span style={{ fontSize: 9, fontWeight: 800, letterSpacing: '0.25em', textTransform: 'uppercase', color: '#4ade80' }}>
               FIFA World Cup 2026 · Prediction League
             </span>
           </div>
-          <h1 style={{ fontSize: 28, fontWeight: 900, color: '#fff', marginBottom: 8, lineHeight: 1.15 }}>
-            Welcome back, {profile?.display_name}
+          <h1 style={{ fontSize: 'clamp(24px, 3.5vw, 36px)', fontWeight: 900, color: '#fff',
+            marginBottom: 10, lineHeight: 1.12, textShadow: '0 2px 20px rgba(0,0,0,0.6)' }}>
+            Welcome back,<br />{profile?.display_name}
           </h1>
           {myRank ? (
-            <p style={{ color: '#94A3B8', fontSize: 14, marginBottom: 20 }}>
+            <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 14, marginBottom: 22 }}>
               Ranked <span style={{ color: '#FBBF24', fontWeight: 700 }}>#{myRank.rank}</span>
-              {' '}· Score{' '}
+              {' · '}Score{' '}
               <span style={{ fontWeight: 700, color: myRank.total_score >= 0 ? '#4ade80' : '#f87171' }}>
                 {fmtScore(myRank.total_score)}
               </span>
             </p>
           ) : (
-            <p style={{ color: '#64748B', fontSize: 14, marginBottom: 20 }}>
+            <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, marginBottom: 22 }}>
               Make your first prediction to get on the board!
             </p>
           )}
@@ -115,15 +245,36 @@ export default function Home() {
             </Link>
           )}
         </div>
-        <div className="hidden md:block" style={{ width: '40%', flexShrink: 0, position: 'relative', overflow: 'hidden' }}>
-          <img src={messVsCr7} alt="Messi vs CR7" style={{
-            position: 'absolute', inset: 0, width: '100%', height: '100%',
-            objectFit: 'cover', objectPosition: 'center top',
-          }} />
-          <div style={{
-            position: 'absolute', inset: 0,
-            background: 'linear-gradient(to right, #0F172A 0%, rgba(15,23,42,0.2) 40%, transparent 70%)',
-          }} />
+
+        {/* ── Bottom-left: Next match info ── */}
+        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 160, zIndex: 2, padding: '48px 36px 24px' }}>
+          {nextMatch ? (
+            <>
+              <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: '0.22em', textTransform: 'uppercase', color: '#4ade80', marginBottom: 6 }}>
+                Next Match
+              </div>
+              <div style={{ fontSize: 'clamp(18px, 2.5vw, 26px)', fontWeight: 900, color: '#fff',
+                lineHeight: 1.1, marginBottom: 6, textShadow: '0 2px 12px rgba(0,0,0,0.5)' }}>
+                {nextMatch.TeamA} vs {nextMatch.TeamB}
+              </div>
+              {nextMatch.DateTime_CST && (
+                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.42)' }}>
+                  {nextMatch.Stage} · {new Date(nextMatch.DateTime_CST).toLocaleDateString('en-US', {
+                    weekday: 'short', month: 'short', day: 'numeric',
+                  })} · {new Date(nextMatch.DateTime_CST).toLocaleTimeString('en-US', {
+                    hour: '2-digit', minute: '2-digit', timeZoneName: 'short',
+                  })}
+                </div>
+              )}
+            </>
+          ) : (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <span style={{ fontSize: 20 }}>🏆</span>
+              <div style={{ fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.5)' }}>
+                What a tournament!
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
