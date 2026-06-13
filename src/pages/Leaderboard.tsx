@@ -3,11 +3,39 @@ import { Trophy } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 import { LeaderboardEntry } from '../types'
-import { fmtScore, getFlag } from '../lib/utils'
+import { fmtScore, getFlag, getStageWeight } from '../lib/utils'
 import FlagImage from '../components/FlagImage'
 import { allStars1 } from '../lib/images'
 
 const MEDAL: Record<number, string> = { 1: '🥇', 2: '🥈', 3: '🥉' }
+
+function Sparkline({ data, positive }: { data: number[]; positive: boolean }) {
+  if (data.length < 2) {
+    return <div style={{ fontSize: 10, color: '#CBD5E1', textAlign: 'center' }}>—</div>
+  }
+  const W = 110, H = 38, PAD = 3
+  const min = Math.min(0, ...data)
+  const max = Math.max(0, ...data)
+  const range = max - min || 1
+  const toX = (i: number) => PAD + (i / (data.length - 1)) * (W - PAD * 2)
+  const toY = (v: number) => H - PAD - ((v - min) / range) * (H - PAD * 2)
+  const zeroY = toY(0)
+  const color = positive ? '#16A34A' : '#DC2626'
+  const pts = data.map((v, i) => `${toX(i).toFixed(1)},${toY(v).toFixed(1)}`).join(' ')
+  const fill = [
+    `${toX(0).toFixed(1)},${zeroY.toFixed(1)}`,
+    ...data.map((v, i) => `${toX(i).toFixed(1)},${toY(v).toFixed(1)}`),
+    `${toX(data.length - 1).toFixed(1)},${zeroY.toFixed(1)}`,
+  ].join(' ')
+  return (
+    <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} style={{ display: 'block' }}>
+      <line x1={PAD} y1={zeroY} x2={W - PAD} y2={zeroY} stroke="#E2E8F0" strokeWidth={1} />
+      <polygon points={fill} fill={positive ? 'rgba(22,163,74,0.12)' : 'rgba(220,38,38,0.1)'} />
+      <polyline points={pts} fill="none" stroke={color} strokeWidth={1.8} strokeLinejoin="round" strokeLinecap="round" />
+      <circle cx={toX(data.length - 1)} cy={toY(data[data.length - 1])} r={2.5} fill={color} />
+    </svg>
+  )
+}
 
 const RANK_STYLE: Record<number, { bg: string; border: string; rankColor: string }> = {
   1: { bg: 'rgba(250,204,21,0.06)',  border: 'rgba(250,204,21,0.25)',  rankColor: '#D97706' },
@@ -18,11 +46,29 @@ const RANK_STYLE: Record<number, { bg: string; border: string; rankColor: string
 export default function Leaderboard() {
   const { user } = useAuth()
   const [entries, setEntries] = useState<LeaderboardEntry[]>([])
+  const [sparkData, setSparkData] = useState<Record<string, number[]>>({})
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     supabase.from('leaderboard').select('*').order('total_score', { ascending: false })
       .then(({ data }) => { setEntries(data ?? []); setLoading(false) })
+
+    supabase
+      .from('prediction_scores')
+      .select('user_id, score, stage, kickoff')
+      .not('result', 'is', null)
+      .order('kickoff', { ascending: true })
+      .then(({ data }) => {
+        if (!data) return
+        const cum: Record<string, number[]> = {}
+        const running: Record<string, number> = {}
+        data.forEach(row => {
+          if (!cum[row.user_id]) { cum[row.user_id] = [0]; running[row.user_id] = 0 }
+          running[row.user_id] += (row.score ?? 0) * getStageWeight(row.stage)
+          cum[row.user_id].push(parseFloat(running[row.user_id].toFixed(4)))
+        })
+        setSparkData(cum)
+      })
   }, [])
 
   if (loading) {
@@ -32,8 +78,6 @@ export default function Leaderboard() {
       </div>
     )
   }
-
-  const maxScore = entries.length ? Math.max(...entries.map(e => Math.abs(e.total_score))) : 1
 
   return (
     <div className="space-y-6">
@@ -111,13 +155,13 @@ export default function Leaderboard() {
           {/* Table header */}
           <div style={{
             display: 'grid',
-            gridTemplateColumns: '52px 1fr 120px 80px 90px 100px',
+            gridTemplateColumns: '52px 1fr 120px 80px 90px 120px',
             gap: 0,
             padding: '10px 20px',
             borderBottom: '2px solid #F1F5F9',
             background: '#FAFAFA',
           }}>
-            {['Rank', 'Player', 'Score', 'Avg', 'Picks', 'Progress'].map((h, i) => (
+            {['Rank', 'Player', 'Score', 'Avg', 'Picks', 'Trend'].map((h, i) => (
               <div key={h} style={{
                 fontSize: 10, fontWeight: 800, textTransform: 'uppercase',
                 letterSpacing: '0.12em', color: '#94A3B8',
@@ -133,15 +177,15 @@ export default function Leaderboard() {
             const rank = idx + 1
             const isMe = entry.user_id === user?.id
             const rs = RANK_STYLE[rank]
-            const scoreBarWidth = maxScore > 0 ? (Math.abs(entry.total_score) / maxScore) * 100 : 0
             const isPos = entry.total_score >= 0
+            const spark = sparkData[entry.user_id] ?? []
 
             return (
               <div
                 key={entry.user_id}
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: '52px 1fr 120px 80px 90px 100px',
+                  gridTemplateColumns: '52px 1fr 120px 80px 90px 120px',
                   gap: 0,
                   padding: '14px 20px',
                   alignItems: 'center',
@@ -237,22 +281,9 @@ export default function Leaderboard() {
                   </div>
                 </div>
 
-                {/* Score bar */}
-                <div style={{ paddingLeft: 12 }}>
-                  <div style={{ height: 6, background: '#F1F5F9', borderRadius: 999, overflow: 'hidden' }}>
-                    <div style={{
-                      height: '100%',
-                      width: `${scoreBarWidth}%`,
-                      borderRadius: 999,
-                      background: isPos
-                        ? 'linear-gradient(90deg, #16A34A, #22C55E)'
-                        : 'linear-gradient(90deg, #DC2626, #EF4444)',
-                      transition: 'width 0.6s ease',
-                    }} />
-                  </div>
-                  <div style={{ fontSize: 10, color: '#94A3B8', marginTop: 3, textAlign: 'right' }}>
-                    {scoreBarWidth.toFixed(0)}%
-                  </div>
+                {/* Score trend sparkline */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Sparkline data={spark} positive={isPos} />
                 </div>
               </div>
             )
