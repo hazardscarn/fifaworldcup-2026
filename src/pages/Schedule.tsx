@@ -80,6 +80,11 @@ export default function Schedule() {
     return true
   })
 
+  // Past-facing filters: show newest first so latest results are at top
+  const displayMatches = (filter === 'locked' || filter === 'predicted')
+    ? [...filtered].reverse()
+    : filtered
+
   const filterDefs: { key: Filter; label: string }[] = [
     { key: 'upcoming',    label: 'Upcoming' },
     { key: 'unpredicted', label: 'Need Prediction' },
@@ -128,7 +133,7 @@ export default function Schedule() {
         </div>
       </div>
 
-      {filtered.length === 0 ? (
+      {displayMatches.length === 0 ? (
         <p style={{ color: '#94A3B8', fontSize: 14 }}>No matches found.</p>
       ) : (
         <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
@@ -136,7 +141,7 @@ export default function Schedule() {
           {/* Single-column match list */}
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 14 }}>
-              {filtered.map(m => (
+              {displayMatches.map(m => (
                 <MatchCard key={m.MatchNo} match={m}
                   prediction={predictions[m.MatchNo]} result={results[m.MatchNo]} />
               ))}
